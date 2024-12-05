@@ -43,64 +43,23 @@ void scalar_one(uint64_t* result){
     one(result);
 }
 
-//precompute omega 实现src/poly/domain文件中new函数的部分功能
-//N=2^k ,j=cs.degree()
-void precompute_omega(uint64_t* root_of_unity,int k,int j,
-int* extended_k, uint64_t* omega, uint64_t* extended_omega)
+void precompute_omega(uint64_t* root_of_unity, int k, uint64_t* omega, int j)
 {
     const int S=32;
     uint64_t n=1ull<<k;
     // quotient_poly_degree * params.n - 1 is the degree of the quotient polynomial
     int quotient_poly_degree = j - 1;
-    *extended_k = k;
-    while ((1ull << *extended_k) < (n * quotient_poly_degree)) {
-        *extended_k += 1;
+    int extended_k = k;
+    while ((1ull << extended_k) < (n * quotient_poly_degree)) {
+        extended_k += 1;
     }
     // Get extended_omega, the 2^{extended_k}'th root of unity
     // The loop computes extended_omega = omega^{2 ^ (S - extended_k)}
     // Notice that extended_omega ^ {2 ^ extended_k} = omega ^ {2^S} = 1.
-    u64_to_u64(extended_omega,root_of_unity);
-    for (int i=*extended_k;i<S;i++) {
-        SQUARE(extended_omega);
-    }
-
-    // Get omega, the 2^{k}'th root of unity (i.e. n'th root of unity)
-    // The loop computes omega = extended_omega ^ {2 ^ (extended_k - k)}
-    //           = (omega^{2 ^ (S - extended_k)})  ^ {2 ^ (extended_k - k)}
-    //           = omega ^ {2 ^ (S - k)}.
-    // Notice that omega ^ {2^k} = omega ^ {2^S} = 1.
-    u64_to_u64(omega,extended_omega);
-    for (int i=k;i<*extended_k;i++) {
+    u64_to_u64(omega,root_of_unity);
+    for (int i=extended_k;i<S;i++) {
         SQUARE(omega);
     }
-    /*先直接填数据，计算过程之后再写
-
-    uint64_t omega_inv[4];
-    u64_to_u64(omega_inv,omega); // Inversion computed later
-
-    uint64_t extended_omega_inv[4];
-    u64_to_u64(extended_omega_inv,extended_omega);// Inversion computed later
-
-    uint64_t ifft_divisor[4];
-    uint64_t extended_ifft_divisor[4];
-    Fp fp1,fp2;
-    from(1 << k,&fp1);
-    from(1 << extended_k,&fp2);
-
-    //compute inversion
-    
-    Fp fp_omega_inv,fp_extended_omega_inv;
-    u64_to_Fp(omega_inv,&fp_omega_inv);
-    u64_to_Fp(extended_omega_inv,&fp_extended_omega_inv);
-    fp_extended_omega_inv=invert(&fp_extended_omega_inv);
-    fp_omega_inv=invert(&fp_omega_inv);
-    invert(&fp1);
-    invert(&fp2);
-    Fp_to_u64(&fp_extended_omega_inv,extended_omega_inv);
-    Fp_to_u64(&fp_omega_inv,omega_inv);
-    Fp_to_u64(&fp1,ifft_divisor);
-    Fp_to_u64(&fp2,extended_ifft_divisor);
-    */
     
 }
 

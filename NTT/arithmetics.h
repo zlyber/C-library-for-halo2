@@ -20,12 +20,12 @@ void group_sub(uint64_t* self, uint64_t* rhs, uint64_t* res);
 void scalar_one(uint64_t* result);
 
 // precompute w^n
-void precompute_omega(uint64_t* root_of_unity,int k,int j,int* extended_k, uint64_t* omega, uint64_t* extended_omega);
+void precompute_omega(uint64_t* root_of_unity, int k, uint64_t* omega, int j = 3);
 // precompute twiddle factors
 void precompute_twiddles(uint64_t** twiddles, uint64_t *omega, uint64_t n);
-//递归版本
+//recursive version
 void recursive_butterfly(uint64_t** vector,uint64_t N, uint64_t twiddle_chunk, uint64_t** twiddles);
-//非递归版本 k=log_n
+//k=log_n
 void fft(uint64_t** vector, uint64_t* omega, int k);
 
 
